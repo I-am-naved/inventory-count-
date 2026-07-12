@@ -1,0 +1,99 @@
+{
+  "theme": {
+    "mode": "light",
+    "archetype": "ORGANIC & EARTHY",
+    "description": "A warm, tactile, and highly functional dashboard designed for Protofino bakery. Blending the precision of a modern POS with the organic warmth of a bakery environment. Eliminating sterile 'SaaS White' in favor of warm paper and sand tones.",
+    "colors": {
+      "background": "#FDFBF7",
+      "surface": "#F7F4EB",
+      "foreground": "#2D2A26",
+      "muted": "#75716A",
+      "muted_foreground": "#8C877D",
+      "border": "#E3DCCC",
+      "primary": "#C27339",
+      "primary_foreground": "#FFFFFF",
+      "secondary": "#E8E2D5",
+      "secondary_foreground": "#2D2A26",
+      "accent": "#7C8D76",
+      "accent_foreground": "#FFFFFF",
+      "destructive": "#B34D4D",
+      "ring": "#C27339"
+    }
+  },
+  "typography": {
+    "headings": {
+      "family": "'Work Sans', sans-serif",
+      "weights": ["400", "600"],
+      "tracking": "tracking-tight"
+    },
+    "body": {
+      "family": "'IBM Plex Sans', sans-serif",
+      "weights": ["400", "500"]
+    },
+    "mono": {
+      "family": "'IBM Plex Mono', monospace",
+      "description": "Use for all numerical data, stock counts, and totals to ensure column alignment and technical precision."
+    },
+    "hierarchy_rules": [
+      "H1 (Dashboard Title): text-4xl sm:text-5xl tracking-tight font-semibold",
+      "H2 (Section/Card Title): text-2xl font-semibold tracking-tight",
+      "Overlines/Labels: Uppercase, text-xs, tracking-[0.2em] text-muted",
+      "Body: text-sm or text-base leading-relaxed"
+    ]
+  },
+  "layouts": {
+    "structure": "Modified F-pattern. Collapsible or minimal left/top navigation, with 'North Star' summary metrics in the top-left quadrant.",
+    "spacing": "Generous outer padding (p-8 to p-12 on containers), but tight internal data density (gap-4 to gap-6) for rapid data entry.",
+    "grid_strategy": "High Density Grid. Summary cards span 1 column, while the main inventory list spans full width. Use 'bento' principles for summary widgets.",
+    "surface_styles": {
+      "cards": "Subtle roundness (max 8px border-radius). Flat background (surface color), 1px subtle border (border-border), no shadow by default. Hover states introduce slight lift (-translate-y-1) and delicate ambient shadow."
+    }
+  },
+  "components": {
+    "buttons": "Pill-shaped or slightly rounded (8px). Primary buttons use Deep Ochre. Must include hover states (lighten hue) and active states (scale down slightly).",
+    "inputs": "Solid surface backgrounds (not transparent). 1px border. Focus state must have a higher contrast ring (2px solid Primary). Use Shadcn input with these customized colors.",
+    "data_entry_table": "Given 10 fixed products, use a dense, grid-based list format where users can tab through inputs rapidly. Columns: Product Name, Shelf, BS Boxes, BS Loose, Delivery, Total. Use monospace for numbers.",
+    "history_panel": "Use Shadcn Sheet (slide-out panel) or Tabs for viewing past counts. Do not navigate away from the main counting context.",
+    "toasts": "Use Sonner for success/save notifications. Position bottom-right."
+  },
+  "motion": {
+    "interactions": "Hover states on all interactive elements. Focus rings on inputs. Staggered entrance animations for the product list rows (e.g., framer-motion staggerChildren).",
+    "transitions": "Use specific properties: transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease. NO 'transition: all'."
+  },
+  "accessibility": {
+    "contrast": "Ensure text contrast meets APCA/WCAG AA standards, especially on primary buttons.",
+    "focus": "Clear focus rings on all inputs and buttons for keyboard navigation (crucial for data-entry speed).",
+    "testing": "All interactive and key informational elements MUST include a data-testid attribute (e.g., data-testid='save-count-button', data-testid='product-row-panaji-naan')."
+  },
+  "media": {
+    "images": [
+      {
+        "url": "https://images.pexels.com/photos/15009979/pexels-photo-15009979.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Warm lit bakery shelves. Use as a subtle, heavily faded background for the header or empty states.",
+        "category": "background/header"
+      }
+    ],
+    "icons": "Use lucide-react. Keep stroke-width to 1.5 or 2 for clarity."
+  },
+  "instructions_to_main_agent": [
+    "Build a single-page Dashboard application for Protofino Bakery stock counting.",
+    "Implement the 10 fixed bakery products with their respective 'qty per box' rules.",
+    "Create a grid/table layout for the products allowing inline editing of: Shelf, Backstock Boxes, Loose Pieces, and Delivery.",
+    "Auto-calculate the total per product: Shelf + (BS Boxes * QtyPerBox) + BS Loose + Delivery.",
+    "Display a Summary Section showing aggregate totals.",
+    "Include a 'Save Count' button that persists the current state with a timestamp to localStorage.",
+    "Include a 'History' view (Sheet or separate view) to see past saved counts.",
+    "Do not use generic 'Inter' for headings; apply 'Work Sans'. Use 'IBM Plex Mono' for numbers.",
+    "Apply the warm, organic color palette detailed in the theme section via Tailwind config.",
+    "Avoid generic centered layouts. Left-align data and forms for functional speed.",
+    "Use 'sonner' for save confirmations."
+  ],
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "Do not converge toward generic 'AI slop' aesthetics (boring gradients, centered everything).",
+    "Create depth through layered design elements and subtle borders instead of heavy shadows.",
+    "NEVER apply universal transition ('transition: all').",
+    "DO NOT center align the app container (.App { text-align: center; }).",
+    "NEVER use placeholder URLs or AI emoji characters for icons.",
+    "Prioritize using pre-existing Shadcn components from src/components/ui, customizing their Tailwind classes to match the theme."
+  ]
+}
