@@ -476,6 +476,31 @@ body {
   color: #94a3b8;
 }
 
+.save-edit-banner {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+.save-edit-banner strong {
+  display: block;
+  color: #1d4ed8;
+  margin-bottom: 2px;
+}
+
+.save-edit-banner p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #1e3a8a;
+}
+
+.save-cancel-button {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
 .save-success {
   display: flex;
   gap: 12px;
@@ -620,6 +645,12 @@ body {
 .history-details {
   padding: 0 16px 14px;
   border-top: 1px solid #e2e8f0;
+}
+
+.history-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .history-detail-block h4 {

@@ -135,7 +135,7 @@ function CountField({ label, hint, value, onChange, subtotal, subtract = false, 
   );
 }
 
-function SavePanel({ totals, note, setNote, onSave, onClearCount, onResetAll, saveMessage, deliveryItems }) {
+function SavePanel({ totals, note, setNote, onSave, onClearCount, onResetAll, saveMessage, deliveryItems, isEditing, onCancelEdit }) {
   return (
     <section className="save-panel">
       <div className="save-panel-header">
@@ -202,9 +202,22 @@ function SavePanel({ totals, note, setNote, onSave, onClearCount, onResetAll, sa
         />
       </label>
 
+      {isEditing && (
+        <div className="save-edit-banner">
+          <strong>Editing a saved count</strong>
+          <p>Update the numbers and save over the original entry.</p>
+        </div>
+      )}
+
       <button type="button" className="save-button" onClick={onSave}>
-        Save today&apos;s count
+        {isEditing ? 'Save count' : 'Save count'}
       </button>
+
+      {isEditing && (
+        <button type="button" className="secondary save-cancel-button" onClick={onCancelEdit}>
+          Cancel edit
+        </button>
+      )}
 
       <div className="save-secondary-actions">
         <button type="button" className="secondary" onClick={onClearCount}>
@@ -238,6 +251,7 @@ function App() {
   const [note, setNote] = useState('');
   const [saveMessage, setSaveMessage] = useState('');
   const [expandedHistory, setExpandedHistory] = useState(null);
+  const [editingCountId, setEditingCountId] = useState(null);
 
   const totals = useMemo(() => getSessionSummary(rows), [rows]);
   const savedDelivery = useMemo(() => loadSavedDelivery(), [history, rows]);
@@ -293,12 +307,57 @@ function App() {
     setSaveMessage('');
   };
 
+  const startEditingSavedCount = (item) => {
+    const rowMap = new Map((item.rows || []).map((row) => [row.productId, row]));
+    const restoredRows = PRODUCT_CATALOG.map((product) => {
+      const savedRow = rowMap.get(product.id);
+
+      if (!savedRow) {
+        return {
+          productId: product.id,
+          productName: product.name,
+          qtyPerBox: product.qtyPerBox,
+          shelf: 0,
+          worked: 0,
+          bsBoxLeft: 0,
+          bsLoose: 0,
+          delivery: 0,
+        };
+      }
+
+      return {
+        ...savedRow,
+        productName: savedRow.productName || product.name,
+        qtyPerBox: Number(savedRow.qtyPerBox || product.qtyPerBox),
+        shelf: Number(savedRow.shelf || 0),
+        worked: Number(savedRow.worked || 0),
+        bsBoxLeft: Number(savedRow.bsBoxLeft || 0),
+        bsLoose: Number(savedRow.bsLoose || 0),
+        delivery: Number(savedRow.delivery || 0),
+      };
+    });
+
+    setRows(restoredRows);
+    setNote(item.note || '');
+    setEditingCountId(item.id);
+    setSaveMessage('');
+    setExpandedHistory(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const cancelEditCount = () => {
+    setEditingCountId(null);
+    setRows(createEmptyRows());
+    setNote('');
+    setSaveMessage('');
+  };
+
   const saveCount = () => {
     const summary = getSessionSummary(rows);
     const deliveryMap = Object.fromEntries(rows.map((row) => [row.productId, Number(row.delivery || 0)]));
 
     const entry = {
-      id: Date.now(),
+      id: editingCountId ?? Date.now(),
       savedAt: new Date().toISOString(),
       note: note.trim(),
       summary,
@@ -308,7 +367,10 @@ function App() {
       })),
     };
 
-    const updatedHistory = [entry, ...history];
+    const updatedHistory = editingCountId
+      ? [entry, ...history.filter((item) => item.id !== editingCountId)]
+      : [entry, ...history];
+
     localStorage.setItem(STORAGE_HISTORY, JSON.stringify(updatedHistory));
     localStorage.setItem(STORAGE_DELIVERY, JSON.stringify(deliveryMap));
 
@@ -324,13 +386,14 @@ function App() {
       })),
     );
     setNote('');
+    setEditingCountId(null);
 
     const deliveryText =
       summary.delivery.productCount > 0
         ? `${summary.delivery.productCount} delivery item${summary.delivery.productCount !== 1 ? 's' : ''} ready for your next count.`
         : 'Start your next count whenever you are ready.';
 
-    setSaveMessage(deliveryText);
+    setSaveMessage(editingCountId ? 'Saved changes to your past count.' : deliveryText);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -468,6 +531,8 @@ function App() {
         onResetAll={resetAll}
         saveMessage={saveMessage}
         deliveryItems={deliveryItems}
+        isEditing={Boolean(editingCountId)}
+        onCancelEdit={cancelEditCount}
       />
 
       <section className="history-card">
@@ -524,9 +589,14 @@ function App() {
                           </ul>
                         </div>
                       )}
-                      <button type="button" className="secondary danger" onClick={() => deleteSavedCount(item.id)}>
-                        Delete this count
-                      </button>
+                      <div className="history-actions">
+                        <button type="button" className="secondary" onClick={() => startEditingSavedCount(item)}>
+                          Edit this count
+                        </button>
+                        <button type="button" className="secondary danger" onClick={() => deleteSavedCount(item.id)}>
+                          Delete this count
+                        </button>
+                      </div>
                     </div>
                   )}
                 </article>
